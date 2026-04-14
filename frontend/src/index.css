@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-cal-bg-base: #09090b;
+    --color-cal-bg-surface: #111113;
+    --color-cal-bg-card: #151518;
+    --color-cal-bg-subtle: #1b1b1f;
+    --color-cal-bg-emphasis: #27272a;
+    --color-cal-bg-inverted: #ffffff;
+
+    --color-cal-text-primary: #f4f4f5;
+    --color-cal-text-default: #d4d4d8;
+    --color-cal-text-muted: #a1a1aa;
+    --color-cal-text-dimmed: #71717a;
+    --color-cal-text-inverted: #09090b;
+
+    --color-cal-border: rgba(255, 255, 255, 0.1);
+    --color-cal-border-emphasis: rgba(255, 255, 255, 0.15);
+
+    --color-cal-brand: #ffffff;
+    --color-cal-brand-text: #09090b;
+
+    --color-cal-success: #10b981;
+    --color-cal-success-subtle: rgba(16, 185, 129, 0.15);
+    --color-cal-warning-subtle: rgba(249, 115, 22, 0.16);
+    --color-cal-error: #ef4444;
+    --color-cal-info: #3b82f6;
+
+    --radius-cal-sm: 6px;
+    --radius-cal-md: 10px;
+    --radius-cal-lg: 14px;
+    --radius-cal-xl: 20px;
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 32%), var(--color-cal-bg-base);
+    color: var(--color-cal-text-default);
+    min-height: 100vh;
+    line-height: 1.5;
+    letter-spacing: -0.01em;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+
+  /* Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-cal-bg-emphasis);
+    border-radius: 99px;
+    border: 2px solid var(--color-cal-bg-base);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #52525b;
+    /* zinc-600 */
+  }
+
+  .cal-card {
+    background-color: var(--color-cal-bg-card);
+    border: 1px solid var(--color-cal-border);
+    border-radius: var(--radius-cal-xl);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03), 0 14px 40px rgba(0, 0, 0, 0.28);
+  }
+
+  .cal-input {
+    background-color: rgba(24, 24, 27, 0.88);
+    color: var(--color-cal-text-primary);
+    border: 1px solid var(--color-cal-border);
+    border-radius: var(--radius-cal-sm);
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+    outline: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+  }
+
+  .cal-input:hover {
+    border-color: var(--color-cal-border-emphasis);
+    background-color: rgba(24, 24, 27, 1);
+  }
+
+  .cal-input:focus {
+    border-color: rgba(255, 255, 255, 0.24);
+    background-color: var(--color-cal-bg-card);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
+  }
+
+  .cal-input::placeholder {
+    color: var(--color-cal-text-dimmed);
+  }
+}
