@@ -30,6 +30,10 @@ A functional scheduling/booking web application inspired by [Cal.com](https://ca
 - Custom booking questions
 - Public user profile page
 
+## Database Scehma
+<img width="1440" height="1718" alt="image" src="https://github.com/user-attachments/assets/b7c51ef8-aef1-4e13-a7ae-d70ca105353c" />
+
+
 ## Architectural Diagram
 - 1st One
   <img width="971" height="812" alt="image" src="https://github.com/user-attachments/assets/c6576ac9-963e-42b8-b9b1-c8c4b9715dda" />
