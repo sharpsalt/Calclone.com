@@ -81,34 +81,36 @@ export function BookingRow({
 
     return (
         <div
-            className="group relative flex cursor-pointer flex-col gap-5 px-6 py-6 text-[#dbe2f0] transition-colors hover:bg-[#10131b] lg:flex-row lg:items-start lg:justify-between"
+            className="group relative flex cursor-pointer flex-col gap-6 border-b border-[#2b2b2b] px-6 py-5 hover:bg-[#1c1c1c] transition-colors lg:flex-row lg:items-start lg:justify-between"
             onClick={() => onClickBooking?.(id)}
         >
-            <div className="grid min-w-0 flex-1 gap-5 md:grid-cols-[190px_minmax(0,1fr)]">
-                <div className="space-y-1">
-                    <div className="text-[2.05rem] font-semibold tracking-tight text-[#eef2fb]">{dateLabel}</div>
-                    <div className="text-[2rem] text-[#a7b2c8]">{startLabel} - {endLabel}</div>
+            <div className="flex w-full min-w-0 flex-1 flex-col gap-3 lg:flex-row">
+                <div className="flex w-[200px] shrink-0 flex-col gap-1">
+                    <div className="text-[15px] font-semibold text-[#f2f2f2]">{dateLabel}</div>
+                    <div className="text-[14px] text-[#9a9a9a]">{startLabel} - {endLabel}</div>
                     <button
                         type="button"
                         onClick={(event) => {
                             event.stopPropagation();
                             onJoin?.(id);
                         }}
-                        className="mt-2 inline-flex items-center gap-2 whitespace-nowrap text-[2rem] text-[#5aa7ff] hover:underline"
+                        className="mt-1.5 inline-flex items-center gap-1.5 text-[14px] text-[#3e8ced] hover:underline"
                     >
                         <Video size={14} />
                         Join Cal Video
                     </button>
                     {status === 'rescheduled' && (
-                        <Badge variant="warning" className="mt-2">
-                            Rescheduled
-                        </Badge>
+                        <div className="mt-2">
+                           <span className="rounded bg-[#332616] px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[#e5801a] border border-[#523c21]">
+                               Rescheduled
+                           </span>
+                        </div>
                     )}
                 </div>
 
-                <div className="space-y-2">
-                    <div className="text-[2.2rem] font-semibold tracking-tight text-[#eef2fb]">You and {bookerName}</div>
-                    <div className="flex flex-wrap items-center gap-3 text-[1.75rem] text-[#a4afc6]">
+                <div className="flex flex-1 flex-col gap-1.5 lg:pl-4">
+                    <div className="text-[19px] font-semibold tracking-tight text-[#f2f2f2]">{bookerName}</div>
+                    <div className="flex items-center gap-3 text-[14px] text-[#9a9a9a]">
                         <span className="inline-flex items-center gap-1.5">
                             <Clock size={14} />
                             {duration} min
@@ -118,21 +120,21 @@ export function BookingRow({
                             {location || 'Cal Video'}
                         </span>
                     </div>
-                    <div className="text-[1.3rem] text-[#7e8aa3]">{eventTitle}</div>
+                    <div className="text-[13px] text-[#717171]">{eventTitle}</div>
                 </div>
             </div>
 
-            <div className="relative flex items-center justify-between gap-3 border-t border-cal-border pt-4 lg:border-0 lg:pt-0" ref={menuRef}>
-                {status === 'upcoming' && <Badge variant="success" className="bg-emerald-500/20 text-emerald-300">Upcoming</Badge>}
-                {status === 'past' && <Badge>Past</Badge>}
-                {status === 'cancelled' && <Badge variant="warning">Cancelled</Badge>}
+            <div className="relative flex shrink-0 items-center justify-between lg:justify-end gap-3 pt-4 lg:pt-0" ref={menuRef}>
+                {status === 'upcoming' && <span className="rounded bg-[#1a3324] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#35c762]">Upcoming</span>}
+                {status === 'past' && <span className="rounded bg-[#2a2a2a] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#9a9a9a]">Past</span>}
+                {status === 'cancelled' && <span className="rounded bg-[#332616] px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-[#e5801a]">Cancelled</span>}
                 <button
                     type="button"
                     onClick={(event) => {
                         event.stopPropagation();
                         setMenuOpen((value) => !value);
                     }}
-                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#2d3344] bg-[#101522] text-[#9ca8bf] transition-colors hover:bg-[#151c2c] hover:text-[#dbe2f0]"
+                    className="flex h-8 w-8 items-center justify-center rounded-md border border-[#333] hover:bg-[#2a2a2a] text-[#9a9a9a] transition-colors"
                 >
                     <MoreHorizontal size={16} />
                 </button>
