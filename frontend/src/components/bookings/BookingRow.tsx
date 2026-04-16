@@ -13,7 +13,6 @@ import {
     XCircle,
 } from 'lucide-react';
 import type { Booking } from '../../types';
-import { Badge } from '../ui/Badge';
 
 function isValidDate(value: Date): boolean {
     return !Number.isNaN(value.getTime());
