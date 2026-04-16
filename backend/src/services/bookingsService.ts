@@ -203,11 +203,11 @@ export const listAvailableSlots = async ({ event_type_id, date }: ListAvailableS
   const allSlots = generateSlotsFromRanges(ranges, duration);
   const bookedTimes = await repo.findBookedStartTimes(event_type_id, date);
   
-  const timeToMin = (t) => {
+  const timeToMin = (t: string) => {
     const [h, m] = t.split(':').map(Number);
     return h * 60 + m;
   };
-  const isOverlap = (slotStartStr) => {
+  const isOverlap = (slotStartStr: string) => {
     const slotStartMin = timeToMin(slotStartStr);
     const slotEndMin = slotStartMin + duration;
     
