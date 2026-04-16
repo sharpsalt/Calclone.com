@@ -201,13 +201,27 @@ export const listAvailableSlots = async ({ event_type_id, date }: ListAvailableS
   );
 
   const allSlots = generateSlotsFromRanges(ranges, duration);
-  const bookedStarts = await repo.findBookedStartTimes(event_type_id, date);
-  const bookedSet = new Set(bookedStarts.map((s) => normalizeTime(s)));
+  const bookedTimes = await repo.findBookedStartTimes(event_type_id, date);
+  
+  const timeToMin = (t) => {
+    const [h, m] = t.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const isOverlap = (slotStartStr) => {
+    const slotStartMin = timeToMin(slotStartStr);
+    const slotEndMin = slotStartMin + duration;
+    
+    return bookedTimes.some(booked => {
+      const bookedStartMin = timeToMin(booked.start_time);
+      const bookedEndMin = timeToMin(booked.end_time || booked.start_time); /* fallback end_time if missing */
+      return slotStartMin < bookedEndMin && slotEndMin > bookedStartMin;
+    });
+  };
 
   const result = {
     date,
     timezone: schedule.timezone || 'UTC',
-    slots: allSlots.filter((slot) => !bookedSet.has(slot)),
+    slots: allSlots.filter((slot) => !isOverlap(slot)),
   };
 
   if (redis) {

@@ -150,16 +150,24 @@ export const createBookingWithGuards = async (id: string, data: NewBookingInput)
 
     const durationMinutes = Number(eventTypeRes.rows[0].duration_minutes);
 
-    // Fast conflict check (no locks) to avoid unnecessary inserts
+    const end_time = computeEndTime(data.start_time, durationMinutes);
+    const hostUserId = eventTypeRes.rows[0].user_id;
+
+    // Cross-event overlap conflict check (no locks) to avoid unnecessary inserts
     const conflictRes = await query(
-      "SELECT 1 FROM bookings WHERE event_type_id=$1 AND date=$2 AND start_time=$3 AND status <> 'cancelled' LIMIT 1",
-      [data.event_type_id, data.date, data.start_time]
+      `SELECT 1 FROM bookings b
+       JOIN event_types et ON b.event_type_id = et.id
+       WHERE et.user_id = $1 
+         AND b.date = $2 
+         AND b.status <> 'cancelled'
+         AND b.start_time < $4 
+         AND b.end_time > $3
+       LIMIT 1`,
+      [hostUserId, data.date, data.start_time, end_time]
     );
     if (conflictRes.rows.length > 0) {
       throw ApiError.conflict('This time slot is already booked');
     }
-
-    const end_time = computeEndTime(data.start_time, durationMinutes);
 
     // Attempt insert on primary; if a concurrent insert wins, unique constraint will trigger
     const inserted = await query(
@@ -204,12 +212,23 @@ export const createBookingWithGuards = async (id: string, data: NewBookingInput)
   }
 };
 
-export const findBookedStartTimes = async (eventTypeId: string, date: string): Promise<string[]> => {
-  const { rows } = await queryRead(
-    "SELECT start_time FROM bookings WHERE event_type_id=$1 AND date=$2 AND status <> 'cancelled' ORDER BY start_time",
-    [eventTypeId, date]
+export const findBookedStartTimes = async (eventTypeId: string, date: string): Promise<{ start_time: string; end_time: string }[]> => {
+  const eventHostRes = await query("SELECT user_id FROM event_types WHERE id = $1", [eventTypeId]);
+  if (eventHostRes.rows.length === 0) return [];
+  const hostUserId = eventHostRes.rows[0].user_id;
+
+  const { rows } = await query(
+    `SELECT b.start_time, b.end_time 
+     FROM bookings b
+     JOIN event_types et ON b.event_type_id = et.id
+     WHERE et.user_id = $1 AND b.date = $2 AND b.status <> 'cancelled'
+     ORDER BY b.start_time`,
+    [hostUserId, date]
   );
-  return rows.map((r) => String(r.start_time).slice(0, 5));
+  return rows.map((r) => ({
+    start_time: String(r.start_time).slice(0, 5),
+    end_time: r.end_time ? String(r.end_time).slice(0, 5) : String(r.start_time).slice(0, 5),
+  }));
 };
 
 export const findBookingsPage = async ({

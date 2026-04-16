@@ -144,8 +144,8 @@ export function BookingsPage() {
         return getSeedBookingsForStatus(active?.serverStatus || 'upcoming');
     }, [active]);
 
-    const showSeedFallback = !hasLoadedFromServer && bookings.length === 0;
-    const visibleBookings = showSeedFallback ? seedFallbackBookings : bookings;
+    const showSeedFallback = !hasLoadedFromServer && (!bookings || bookings.length === 0);
+    const visibleBookings = showSeedFallback ? seedFallbackBookings : (bookings || []);
     const visibleTotal = showSeedFallback ? seedFallbackBookings.length : total;
     const visibleHasMore = showSeedFallback ? false : hasMore;
 

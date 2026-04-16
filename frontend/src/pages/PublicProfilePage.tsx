@@ -83,7 +83,7 @@ export function PublicProfilePage() {
         if (!profile) return [];
         return profile.event_types
             // Ensure BOTH forms of active flags (is_active / isActive) correctly filter out the hidden ones
-            .filter((eventType) => eventType.is_active || (eventType as any).isActive)
+            .filter((eventType) => eventType.is_active !== false && (eventType as any).isActive !== false)
             .map((eventType) => ({
                 id: eventType.id,
                 title: eventType.title,
