@@ -354,7 +354,7 @@ export function BookingsPage() {
                     </div>
                 </div>
 
-                <Card noPadding className="overflow-hidden rounded-2xl border border-[#252a36] bg-gradient-to-br from-[#10141f] to-[#0c0f17] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
+                <Card noPadding className="rounded-2xl border border-[#252a36] bg-gradient-to-br from-[#10141f] to-[#0c0f17] shadow-[0_20px_40px_rgba(0,0,0,0.35)]">
                     <div className="border-b border-[#232735] px-6 py-4 text-xs font-semibold uppercase tracking-[0.18em] text-[#8f9bb3]">
                         Next
                     </div>
