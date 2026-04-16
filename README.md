@@ -33,6 +33,9 @@ A functional scheduling/booking web application inspired by [Cal.com](https://ca
 ## Architectural Diagram
 - 1st One
   <img width="971" height="812" alt="image" src="https://github.com/user-attachments/assets/c6576ac9-963e-42b8-b9b1-c8c4b9715dda" />
+- 2nd One
+- <img width="1682" height="761" alt="image" src="https://github.com/user-attachments/assets/ef5d9b78-21c5-4465-9e0f-83add25829a0" />
+
 
 
 ## Database Schema
