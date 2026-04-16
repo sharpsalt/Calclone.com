@@ -82,7 +82,8 @@ export function PublicProfilePage() {
     const activeEvents = useMemo(() => {
         if (!profile) return [];
         return profile.event_types
-            .filter((eventType) => eventType.is_active)
+            // Ensure BOTH forms of active flags (is_active / isActive) correctly filter out the hidden ones
+            .filter((eventType) => eventType.is_active || (eventType as any).isActive)
             .map((eventType) => ({
                 id: eventType.id,
                 title: eventType.title,

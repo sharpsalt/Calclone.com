@@ -7,7 +7,7 @@ services:
     name: calclone-backend
     env: docker
     dockerfilePath: backend/Dockerfile
-    repo: <your-github-repo>
+    repo: https://github.com/sharpsalt/Calclone.com.git
     branch: main
     plan: starter
     autoDeploy: true
@@ -18,7 +18,7 @@ services:
     name: calclone-worker
     env: docker
     dockerfilePath: backend/Dockerfile
-    repo: <your-github-repo>
+    repo: https://github.com/sharpsalt/Calclone.com.git
     branch: main
     plan: starter
     autoDeploy: true
