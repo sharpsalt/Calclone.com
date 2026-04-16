@@ -203,18 +203,23 @@ export const listAvailableSlots = async ({ event_type_id, date }: ListAvailableS
   const allSlots = generateSlotsFromRanges(ranges, duration);
   const bookedTimes = await repo.findBookedStartTimes(event_type_id, date);
   
+  // Pre-compute booked times to minutes once to avoid O(N*M) heavy processing
   const timeToMin = (t: string) => {
     const [h, m] = t.split(':').map(Number);
     return h * 60 + m;
   };
+  
+  const bookedIntervals = bookedTimes.map(b => ({
+    start: timeToMin(b.start_time),
+    end: timeToMin(b.end_time || b.start_time)
+  }));
+
   const isOverlap = (slotStartStr: string) => {
     const slotStartMin = timeToMin(slotStartStr);
     const slotEndMin = slotStartMin + duration;
     
-    return bookedTimes.some(booked => {
-      const bookedStartMin = timeToMin(booked.start_time);
-      const bookedEndMin = timeToMin(booked.end_time || booked.start_time); /* fallback end_time if missing */
-      return slotStartMin < bookedEndMin && slotEndMin > bookedStartMin;
+    return bookedIntervals.some(booked => {
+      return slotStartMin < booked.end && slotEndMin > booked.start;
     });
   };
 
