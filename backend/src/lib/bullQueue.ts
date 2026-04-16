@@ -9,7 +9,7 @@ let queue: Queue | null = null;
 
 if (url) {
   try {
-    const connection = new IORedis(url);
+    const connection = new IORedis(url, { maxRetriesPerRequest: null });
     queue = new Queue(QUEUE_NAME, { connection });
     logger.info('bullQueue initialized', { queue: QUEUE_NAME });
   } catch (err) {

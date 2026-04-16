@@ -11,7 +11,7 @@ if (!REDIS_URL) {
   process.exit(0);
 }
 
-const connection = new IORedis(REDIS_URL);
+const connection = new IORedis(process.env.REDIS_URL as string, { maxRetriesPerRequest: null });
 
 const worker = new Worker(
   QUEUE_NAME,
