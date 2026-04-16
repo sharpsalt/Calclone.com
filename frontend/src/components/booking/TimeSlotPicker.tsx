@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
+import { format, isSameDay, parse } from 'date-fns';
 import { Button } from '../ui/Button';
 import { cn, generateTimeSlots, formatTime } from '../../lib/utils';
 import type { TimeRange, Booking } from '../../types';
@@ -9,6 +9,8 @@ interface TimeSlotPickerProps {
     timeRanges: TimeRange[];
     duration: number;
     existingBookings: Booking[];
+    availableSlots?: string[];
+    isLoading?: boolean;
     onSelectSlot: (time: string) => void;
     onContinue: () => void;
     selectedSlot?: string | null;
@@ -19,6 +21,8 @@ export function TimeSlotPicker({
     timeRanges,
     duration,
     existingBookings,
+    availableSlots,
+    isLoading = false,
     onSelectSlot,
     onContinue,
     selectedSlot,
@@ -26,10 +30,27 @@ export function TimeSlotPicker({
     const [use24h, setUse24h] = useState(false);
     const dateStr = format(selectedDate, 'yyyy-MM-dd');
 
-    const slots = useMemo(
-        () => generateTimeSlots(dateStr, timeRanges, duration, existingBookings).filter((slot) => slot.available),
-        [dateStr, timeRanges, duration, existingBookings]
-    );
+    const slots = useMemo(() => {
+        const now = new Date();
+        const isToday = isSameDay(selectedDate, now);
+
+        if (Array.isArray(availableSlots)) {
+            return availableSlots
+                .map((time) => ({ time, available: true }))
+                .filter((slot) => {
+                    if (!isToday) return true;
+                    const slotStart = parse(slot.time, 'HH:mm', selectedDate);
+                    return slotStart.getTime() > now.getTime();
+                });
+        }
+
+        return generateTimeSlots(dateStr, timeRanges, duration, existingBookings)
+            .filter((slot) => {
+                if (!isToday) return true;
+                const slotStart = parse(slot.time, 'HH:mm', selectedDate);
+                return slotStart.getTime() > now.getTime();
+            });
+    }, [dateStr, timeRanges, duration, existingBookings, selectedDate]);
 
     return (
         <div className="flex h-full w-full flex-col border-cal-border md:border-l md:pl-8">
@@ -62,31 +83,43 @@ export function TimeSlotPicker({
             </div>
 
             <div className="flex max-h-[500px] flex-1 flex-col gap-3 overflow-y-auto pr-1">
-                {slots.length === 0 ? (
+                {isLoading ? (
+                    <div className="rounded-2xl border border-dashed border-cal-border bg-cal-bg-subtle/60 px-4 py-8 text-center text-sm text-cal-text-muted">
+                        Loading available slots...
+                    </div>
+                ) : slots.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-cal-border bg-cal-bg-subtle/60 px-4 py-8 text-center text-sm text-cal-text-muted">
                         No slots available for this day.
                     </div>
                 ) : (
                     slots.map((slot) => (
-                        <div key={slot.time} className="flex items-stretch gap-3">
+                        <div key={slot.time} className="flex items-center gap-3">
                             <button
                                 type="button"
-                                onClick={() => onSelectSlot(slot.time)}
+                                onClick={() => slot.available && onSelectSlot(slot.time)}
+                                disabled={!slot.available}
                                 className={cn(
-                                    'flex-1 rounded-2xl border px-4 py-3 text-base font-medium transition-all',
+                                    'flex-1 rounded-2xl border px-4 py-3 text-sm font-medium transition-all flex items-center justify-between',
                                     selectedSlot === slot.time
-                                        ? 'border-[#0ea5e9] bg-[#0ea5e9]/10 text-cal-text-primary'
-                                        : 'border-cal-border text-cal-text-primary hover:border-white/20 hover:bg-white/5'
+                                        ? 'bg-[#0f1720] border-transparent text-cal-text-inverted'
+                                        : slot.available
+                                            ? 'bg-cal-bg-card border-cal-border text-cal-text-primary hover:brightness-105'
+                                            : 'bg-cal-bg-subtle/60 border-cal-border text-cal-text-dimmed cursor-not-allowed'
                                 )}
                             >
-                                <span className="inline-flex items-center gap-2">
-                                    <span className="h-2.5 w-2.5 rounded-full bg-[#16d9a3]" />
-                                    {formatTime(slot.time, use24h)}
+                                <span className="inline-flex items-center gap-3">
+                                    <span className={`h-2.5 w-2.5 rounded-full ${slot.available ? 'bg-[#16d9a3]' : 'bg-cal-text-dimmed'}`} />
+                                    <span className="font-medium">{formatTime(slot.time, use24h)}</span>
                                 </span>
+                                {selectedSlot === slot.time ? (
+                                    <span className="text-xs text-cal-text-muted">Selected</span>
+                                ) : !slot.available ? (
+                                    <span className="text-xs text-cal-text-dimmed">Unavailable</span>
+                                ) : null}
                             </button>
-                            {selectedSlot === slot.time && (
-                                <Button className="h-auto px-5" onClick={onContinue}>
-                                    Next
+                            {selectedSlot === slot.time && slot.available && (
+                                <Button className="h-10 px-4" variant="accent" onClick={onContinue}>
+                                    Continue
                                 </Button>
                             )}
                         </div>

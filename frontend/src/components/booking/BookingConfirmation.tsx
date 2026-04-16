@@ -8,6 +8,10 @@ interface BookingConfirmationProps {
     selectedTime: string | null;
     bookerName: string;
     bookerEmail: string;
+    bookingId?: string;
+    onBack?: () => void;
+    onReschedule?: () => void;
+    onCancel?: () => Promise<void> | void;
 }
 
 export function BookingConfirmation({
@@ -16,6 +20,10 @@ export function BookingConfirmation({
     selectedTime,
     bookerName,
     bookerEmail,
+    bookingId,
+    onBack,
+    onReschedule,
+    onCancel,
 }: BookingConfirmationProps) {
     if (!selectedDate || !selectedTime) {
         return null;
@@ -27,7 +35,14 @@ export function BookingConfirmation({
     return (
         <div className="min-h-screen bg-cal-bg-base px-4 py-8 sm:px-6">
             <div className="mx-auto w-full max-w-[760px]">
-                <button type="button" className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-cal-text-muted transition-colors hover:text-cal-text-primary">
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (typeof onBack === 'function') return onBack();
+                        try { window.history.back(); } catch { /* noop */ }
+                    }}
+                    className="mb-8 inline-flex items-center gap-2 text-sm font-medium text-cal-text-muted transition-colors hover:text-cal-text-primary"
+                >
                     <ChevronLeft size={16} />
                     Back to bookings
                 </button>
@@ -81,7 +96,35 @@ export function BookingConfirmation({
                     </div>
 
                     <div className="mt-10 border-t border-cal-border pt-8 text-center text-lg text-cal-text-muted">
-                        Need to make a change? <span className="text-cal-text-primary underline underline-offset-4">Reschedule</span> or <span className="text-cal-text-primary underline underline-offset-4">Cancel</span>
+                        Need to make a change?{' '}
+                        <button
+                            type="button"
+                            onClick={() => {
+                                if (typeof onReschedule === 'function') return onReschedule();
+                                if (bookingId) {
+                                    try { window.location.href = `/bookings/${bookingId}`; } catch {}
+                                }
+                            }}
+                            className="text-cal-text-primary underline underline-offset-4"
+                        >
+                            Reschedule
+                        </button>{' '}
+                        or{' '}
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                if (typeof onCancel === 'function') {
+                                    await onCancel();
+                                    return;
+                                }
+                                if (bookingId) {
+                                    try { await fetch(`/api/bookings/${bookingId}`, { method: 'DELETE' }); window.location.reload(); } catch {}
+                                }
+                            }}
+                            className="text-cal-text-primary underline underline-offset-4"
+                        >
+                            Cancel
+                        </button>
                     </div>
                 </div>
             </div>

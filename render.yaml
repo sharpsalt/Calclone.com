@@ -1,0 +1,39 @@
+# Render manifest (template)
+# Replace <your-github-repo> with e.g. github.com/your-org/Calclone.com
+# You'll still need to set environment variables in Render's UI (recommended for secrets).
+
+services:
+  - type: web
+    name: calclone-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    repo: <your-github-repo>
+    branch: main
+    plan: starter
+    autoDeploy: true
+    buildCommand: npm run build
+    startCommand: npm run start
+
+  - type: worker
+    name: calclone-worker
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    repo: <your-github-repo>
+    branch: main
+    plan: starter
+    autoDeploy: true
+    startCommand: npm run worker:emails
+
+# Optional managed DB and Redis (create from Render UI if you prefer)
+databases:
+  - name: calclone-db
+    engine: postgresql
+    plan: starter
+    version: "15"
+
+# If Render adds first-class Redis support in your account, add it via UI and set REDIS_URL in service env.
+
+# NOTES:
+# - Replace repo/branch values or remove them if you create services in the Render UI.
+# - Do NOT store secrets in this file; add them in Render service settings: DATABASE_URL, REDIS_URL, SENDGRID_API_KEY, SMTP_* etc.
+# - After pushing this file to the repo, Render will detect the manifest when you create a new service (or you can create services manually from the UI).

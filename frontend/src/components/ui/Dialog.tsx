@@ -31,19 +31,20 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
     return (
         <div
             ref={overlayRef}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
+            className="fixed inset-0 z-50 flex items-start sm:items-center justify-center py-8 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150"
             onClick={(e) => {
                 if (e.target === overlayRef.current) onClose();
             }}
         >
             <div
                 className={cn(
-                    'cal-card w-full max-w-md mx-4 p-6 shadow-[var(--shadow-cal)] animate-in zoom-in-95 duration-150',
+                    'cal-card w-full mx-4 shadow-[var(--shadow-cal)] animate-in zoom-in-95 duration-150 overflow-hidden',
+                    !className && 'max-w-md',
                     className
                 )}
             >
                 {title && (
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-cal-border">
                         <h2 className="text-lg font-semibold text-cal-text-primary">{title}</h2>
                         <button
                             onClick={onClose}
@@ -53,7 +54,10 @@ export function Dialog({ open, onClose, title, children, className }: DialogProp
                         </button>
                     </div>
                 )}
-                {children}
+
+                <div className={cn('dialog-body overflow-auto max-h-[80vh] p-4 sm:p-6', !title ? 'pt-0' : '')}>
+                    {children}
+                </div>
             </div>
         </div>
     );

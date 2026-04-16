@@ -29,8 +29,8 @@ export function EventTypeList({ eventTypes, onToggle, onEdit, onDelete }: EventT
 
     return (
         <Card noPadding>
-            {eventTypes.map((et) => (
-                <EventTypeCard key={et.id} {...et} />
+            {eventTypes.map((et, idx) => (
+                <EventTypeCard key={et.id} {...et} index={idx} totalCount={eventTypes.length} />
             ))}
         </Card>
     );

@@ -4,6 +4,8 @@ export const defaultUser: User = {
     name: 'Srijan Verma',
     username: 'srijan',
     timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    presence: 'available',
+    online: true,
 };
 
 export const seedEventTypes: EventType[] = [

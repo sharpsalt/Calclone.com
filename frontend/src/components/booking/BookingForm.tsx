@@ -9,7 +9,7 @@ interface BookingFormProps {
     selectedDate: Date;
     selectedTime: string;
     onBack: () => void;
-    onConfirm: (data: { name: string; email: string; notes: string }) => void;
+    onConfirm: (data: { name: string; email: string; notes: string }) => Promise<void> | void;
 }
 
 export function BookingForm({
@@ -26,10 +26,16 @@ export function BookingForm({
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [notes, setNotes] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        onConfirm({ name, email, notes });
+        setSubmitting(true);
+        try {
+            await onConfirm({ name, email, notes });
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -71,7 +77,7 @@ export function BookingForm({
                     <Button type="button" variant="ghost" onClick={onBack}>
                         Back
                     </Button>
-                    <Button type="submit">Confirm</Button>
+                    <Button type="submit" disabled={submitting}>{submitting ? 'Confirming...' : 'Confirm'}</Button>
                 </div>
             </form>
         </div>
