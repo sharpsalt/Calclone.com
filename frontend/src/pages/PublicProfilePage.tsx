@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { defaultUser } from '../data/seed';
 import { getInitials } from '../lib/utils';
 import { Card } from '../components/ui/Card';
+import { Skeleton } from '../components/ui/Skeleton';
 import * as api from '../lib/api';
 
 type PublicProfile = {
@@ -107,8 +108,14 @@ export function PublicProfilePage() {
                 </Card>
 
                 {loading && (
-                    <Card className="py-16 text-center">
-                        <p className="text-cal-text-muted">Loading event types...</p>
+                    <Card className="py-8 px-6">
+                        <div className="space-y-4">
+                            <Skeleton className="h-6 w-40 rounded-md" />
+                            <Skeleton className="h-4 w-28 rounded-md" />
+                            <div className="space-y-3">
+                                <Skeleton className="h-20 rounded-md" count={3} />
+                            </div>
+                        </div>
                     </Card>
                 )}
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { format, parse } from 'date-fns';
 import { Button } from '../components/ui/Button';
+import { Skeleton } from '../components/ui/Skeleton';
 import * as api from '../lib/api';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:4000';
@@ -34,7 +35,23 @@ export function ManageBookingPage() {
         return () => { active = false; };
     }, [token]);
 
-    if (loading) return <div className="p-8">Loading booking…</div>;
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-cal-bg-base px-4 py-12">
+                <div className="mx-auto max-w-2xl space-y-6">
+                    <h1 className="text-2xl font-semibold"><Skeleton className="h-6 w-48 rounded-md" /></h1>
+                    <div className="rounded-lg border bg-white/3 p-4">
+                        <div className="mb-2 text-sm text-cal-text-muted"><Skeleton className="h-4 w-24 rounded-md" /></div>
+                        <div className="text-lg font-medium"><Skeleton className="h-5 w-64 rounded-md" /></div>
+                        <div className="mt-4 text-sm text-cal-text-muted"><Skeleton className="h-4 w-20 rounded-md" /></div>
+                        <div className="text-lg"><Skeleton className="h-4 w-48 rounded-md" /></div>
+                        <div className="mt-4 text-sm text-cal-text-muted"><Skeleton className="h-4 w-20 rounded-md" /></div>
+                        <div className="text-lg"><Skeleton className="h-4 w-64 rounded-md" /></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
     if (error) return <div className="p-8 text-red-600">{error}</div>;
     if (!booking) return <div className="p-8">Booking not found</div>;
 

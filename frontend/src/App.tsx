@@ -8,7 +8,16 @@ import { PublicProfilePage } from './pages/PublicProfilePage';
 import { PublicBookingPage } from './pages/PublicBookingPage';
 import { ManageBookingPage } from './pages/ManageBookingPage';
 import { OutOfOfficePage } from './pages/OutOfOfficePage';
-import { SettingsPage } from './pages/SettingsPage';
+import SettingsPage from './pages/SettingsPage';
+import { Profile } from './pages/settings/Profile';
+import Overview from './pages/settings/Overview';
+import { General } from './pages/settings/General';
+import { Calendars } from './pages/settings/Calendars';
+import { Conferencing } from './pages/settings/Conferencing';
+import { Appearance } from './pages/settings/Appearance';
+import { OutOfOffice } from './pages/settings/OutOfOffice';
+import { PushNotifications } from './pages/settings/PushNotifications';
+import { Features } from './pages/settings/Features';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { HelpPage } from './pages/HelpPage';
 import { EventTypeEditorPage } from './pages/EventTypeEditorPage';
@@ -66,7 +75,17 @@ function App() {
         <Route path="/bookings" element={<BookingsPage />} />
         <Route path="/bookings/:id" element={<BookingDetailsPage />} />
         <Route path="/bookings/:id/join" element={<JoinCalVideoPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings" element={<SettingsPage />}>
+          <Route index element={<Overview />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="general" element={<General />} />
+          <Route path="calendars" element={<Calendars />} />
+          <Route path="conferencing" element={<Conferencing />} />
+          <Route path="appearance" element={<Appearance />} />
+          <Route path="out-of-office" element={<OutOfOffice />} />
+          <Route path="push-notifications" element={<PushNotifications />} />
+          <Route path="features" element={<Features />} />
+        </Route>
         <Route path="/roadmap" element={<RoadmapPage />} />
         <Route path="/help" element={<HelpPage />} />
 

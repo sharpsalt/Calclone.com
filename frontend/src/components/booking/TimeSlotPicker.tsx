@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { format, isSameDay, parse } from 'date-fns';
 import { Button } from '../ui/Button';
+import { Skeleton } from '../ui/Skeleton';
 import { cn, generateTimeSlots, formatTime } from '../../lib/utils';
 import type { TimeRange, Booking } from '../../types';
 
@@ -84,8 +85,13 @@ export function TimeSlotPicker({
 
             <div className="flex max-h-[500px] flex-1 flex-col gap-3 overflow-y-auto pr-1">
                 {isLoading ? (
-                    <div className="rounded-2xl border border-dashed border-cal-border bg-cal-bg-subtle/60 px-4 py-8 text-center text-sm text-cal-text-muted">
-                        Loading available slots...
+                    <div className="rounded-2xl border border-dashed border-cal-border bg-cal-bg-subtle/60 px-4 py-4">
+                        <div className="mb-3">
+                            <Skeleton className="h-5 w-36 rounded-md" />
+                        </div>
+                        <div>
+                            <Skeleton className="h-12 rounded-2xl mb-3" count={4} />
+                        </div>
                     </div>
                 ) : slots.length === 0 ? (
                     <div className="rounded-2xl border border-dashed border-cal-border bg-cal-bg-subtle/60 px-4 py-8 text-center text-sm text-cal-text-muted">

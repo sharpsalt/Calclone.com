@@ -27,7 +27,11 @@ const MAIN_NAV = [
     { name: 'Availability', href: '/availability', icon: Clock },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+    className?: string;
+}
+
+export function Sidebar({ className }: SidebarProps) {
     const user = useUserStore((s) => s.user);
     const updateUser = useUserStore((s) => s.updateUser);
     const [open, setOpen] = useState(false);
@@ -107,8 +111,8 @@ export function Sidebar() {
 
     return (
         <>
-            <aside className="sticky top-0 hidden h-screen w-64 shrink-0 border-r border-cal-border bg-cal-bg-surface lg:flex">
-                <div className="flex h-full w-full flex-col px-5 py-6">
+            <aside className={className ?? 'sticky top-0 hidden h-screen w-64 shrink-0 border-r border-cal-border bg-cal-bg-surface lg:flex'}>
+                <div className={cn('flex h-full w-full flex-col px-5 py-6')}> 
                     <div className="mb-6 relative">
                         <div className="flex items-center gap-2">
                                 <button

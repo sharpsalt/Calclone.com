@@ -8,6 +8,7 @@ import { Card } from '../components/ui/Card';
 import { Shell } from '../components/layout/Shell';
 import { PageHeader } from '../components/layout/PageHeader';
 import { seedBookings } from '../data/seed';
+import RequestRescheduleDialog from '../components/bookings/RequestRescheduleDialog';
 
 const TABS = [
     { id: 'upcoming', label: 'Upcoming', serverStatus: 'upcoming' },
@@ -199,10 +200,29 @@ export function BookingsPage() {
         }
     }
 
-    async function handleRequestReschedule(id: string) {
-        const message = window.prompt('Optional message for reschedule request:') || undefined;
-        await requestReschedule(id, message);
-        await refreshActiveTab();
+    const [rescheduleDialogOpen, setRescheduleDialogOpen] = useState(false);
+    const [rescheduleBookingId, setRescheduleBookingId] = useState<string | null>(null);
+    const [rescheduleSubmitting, setRescheduleSubmitting] = useState(false);
+
+    function handleRequestReschedule(id: string) {
+        setRescheduleBookingId(id);
+        setRescheduleDialogOpen(true);
+    }
+
+    async function performRequestReschedule(message?: string) {
+        if (!rescheduleBookingId) return;
+        try {
+            setRescheduleSubmitting(true);
+            await requestReschedule(rescheduleBookingId, message);
+            await refreshActiveTab();
+        } catch (err) {
+            console.error('request reschedule failed', err);
+            window.alert('Could not request a reschedule.');
+        } finally {
+            setRescheduleSubmitting(false);
+            setRescheduleDialogOpen(false);
+            setRescheduleBookingId(null);
+        }
     }
 
     async function handleEditLocation(id: string) {
@@ -370,7 +390,7 @@ export function BookingsPage() {
                                     onClickBooking={(id) => navigate(`/bookings/${id}`)}
                                     onJoin={(id) => navigate(`/bookings/${id}/join`)}
                                     onReschedule={handleReschedule}
-                                    onRequestReschedule={handleRequestReschedule}
+                                            onRequestReschedule={handleRequestReschedule}
                                     onEditLocation={handleEditLocation}
                                     onAddGuests={handleAddGuests}
                                     onMarkNoShow={handleMarkNoShow}
@@ -417,6 +437,12 @@ export function BookingsPage() {
                         </div>
                     </div>
                 </Card>
+                <RequestRescheduleDialog
+                    open={rescheduleDialogOpen}
+                    onClose={() => setRescheduleDialogOpen(false)}
+                    onConfirm={async (message?: string) => await performRequestReschedule(message)}
+                    submitting={rescheduleSubmitting}
+                />
             </div>
         </Shell>
     );

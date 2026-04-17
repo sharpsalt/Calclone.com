@@ -7,6 +7,7 @@ import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Switch } from '../components/ui/Switch';
+import { Skeleton } from '../components/ui/Skeleton';
 import api from '../lib/api';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
@@ -121,7 +122,36 @@ export function ScheduleEditorPage() {
     }
   }
 
-  if (loading) return <div className="text-cal-text-muted">Loading…</div>;
+  if (loading) {
+    return (
+      <Shell>
+        <PageHeader
+          title={<Skeleton className="h-6 w-48 rounded-md" />}
+          subtitle={undefined}
+          actions={<div className="flex items-center gap-2"><Skeleton className="h-8 w-20 rounded-md" /><Skeleton className="h-8 w-20 rounded-md" /></div>}
+        />
+
+        <Card noPadding>
+          <div className="px-6 py-6">
+            <Skeleton className="h-5 w-48 rounded-md mb-4" />
+            <Skeleton className="h-10 w-full rounded-md mb-6" />
+
+            <Skeleton className="h-4 w-24 rounded-md mb-3" />
+            <Skeleton className="h-10 w-full rounded-md mb-4" />
+
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-4 w-40 rounded-md" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </Card>
+      </Shell>
+    );
+  }
 
   return (
     <Shell>

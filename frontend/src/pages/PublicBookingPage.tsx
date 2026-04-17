@@ -13,6 +13,7 @@ import { TimeSlotPicker } from '../components/booking/TimeSlotPicker';
 import { BookingForm } from '../components/booking/BookingForm';
 import { BookingConfirmation } from '../components/booking/BookingConfirmation';
 import { Dialog } from '../components/ui/Dialog';
+import { Skeleton } from '../components/ui/Skeleton';
 import * as api from '../lib/api';
 
 type BookingStep = 'calendar' | 'form' | 'confirmation';
@@ -211,9 +212,40 @@ export function PublicBookingPage() {
 
     if (eventTypeLoading) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-cal-bg-base px-4">
-                <div className="text-center">
-                    <h1 className="text-2xl font-semibold text-cal-text-primary">Loading event...</h1>
+            <div className="min-h-screen bg-cal-bg-base px-4 py-6 sm:px-6 sm:py-8">
+                <div className="mx-auto w-full max-w-[1160px]">
+                    <div className="overflow-hidden rounded-[28px] border border-cal-border bg-cal-bg-card p-6 shadow-[0_18px_40px_rgba(0,0,0,0.28)]">
+                        <div className="grid lg:grid-cols-[320px_minmax(0,1fr)] gap-6 min-h-[360px]">
+                            <aside className="px-4 py-4">
+                                <div className="flex items-center gap-3">
+                                    <Skeleton className="h-10 w-10 rounded-full" />
+                                    <div className="flex-1">
+                                        <Skeleton className="h-5 w-40 rounded-md" />
+                                    </div>
+                                </div>
+
+                                <div className="mt-6">
+                                    <Skeleton className="h-10 w-72 rounded-md" />
+                                </div>
+
+                                <div className="mt-6 space-y-3">
+                                    <Skeleton className="h-4 w-32 rounded-md" />
+                                    <Skeleton className="h-4 w-28 rounded-md" />
+                                    <Skeleton className="h-4 w-36 rounded-md" />
+                                </div>
+                            </aside>
+
+                            <section className="px-4 py-4">
+                                <div className="mb-4">
+                                    <Skeleton className="h-40 w-full rounded-2xl" />
+                                </div>
+
+                                <div className="space-y-3">
+                                    <Skeleton className="h-12 rounded-2xl" count={4} />
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             </div>
         );
