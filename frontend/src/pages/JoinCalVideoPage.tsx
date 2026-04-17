@@ -51,15 +51,11 @@ export function JoinCalVideoPage() {
     const streamRef = useRef<MediaStream | null>(null);
 
     useEffect(() => {
-        if (!booking && id) {
-            void fetchBookingById(id);
-        }
+        if (!booking && id) void fetchBookingById(id);
     }, [booking, fetchBookingById, id]);
 
-    // enumerate devices and handle device changes
     useEffect(() => {
         let mounted = true;
-
         async function updateDevices() {
             if (!navigator.mediaDevices?.enumerateDevices) return;
             try {
@@ -71,18 +67,15 @@ export function JoinCalVideoPage() {
                 console.error('enumerateDevices failed', err);
             }
         }
-
         void updateDevices();
         const onDeviceChange = () => void updateDevices();
         navigator.mediaDevices?.addEventListener?.('devicechange', onDeviceChange);
-
         return () => {
             mounted = false;
             navigator.mediaDevices?.removeEventListener?.('devicechange', onDeviceChange);
         };
     }, []);
 
-    // pick sensible defaults when devices list updates
     useEffect(() => {
         if (!selectedCameraId) {
             const cam = devices.find((d) => d.kind === 'videoinput');
@@ -98,7 +91,6 @@ export function JoinCalVideoPage() {
         }
     }, [devices]);
 
-    // helper to (re)create the media stream based on selected devices and toggles
     const getMedia = async () => {
         if (!navigator.mediaDevices?.getUserMedia) {
             setMediaError('Media devices API not available in this browser.');
@@ -106,7 +98,6 @@ export function JoinCalVideoPage() {
             return;
         }
 
-        // stop existing
         if (streamRef.current) {
             streamRef.current.getTracks().forEach((t) => t.stop());
             streamRef.current = null;
@@ -129,7 +120,6 @@ export function JoinCalVideoPage() {
                 if (p && typeof p.then === 'function') p.catch(() => {});
             }
         } catch (err: any) {
-            // capture a helpful error message
             // eslint-disable-next-line no-console
             console.error('getUserMedia error', err);
             setMediaError(err?.message ? String(err.message) : 'Unable to access camera/microphone');
@@ -137,7 +127,6 @@ export function JoinCalVideoPage() {
         }
     };
 
-    // Join / leave handlers
     const handleJoin = async () => {
         setShowDock(false);
         await getMedia();
@@ -154,7 +143,6 @@ export function JoinCalVideoPage() {
         navigate('/bookings');
     };
 
-    // recreate stream when selected devices or toggles change
     useEffect(() => {
         void getMedia();
         return () => {
@@ -165,7 +153,6 @@ export function JoinCalVideoPage() {
         };
     }, [selectedCameraId, selectedMicId, cameraOn, micOn]);
 
-    // mic test: record short snippet and play it back
     const testMic = async () => {
         if (!navigator.mediaDevices?.getUserMedia) return;
         setIsTestingMic(true);
@@ -185,7 +172,6 @@ export function JoinCalVideoPage() {
             const blob = new Blob(chunks, { type: 'audio/webm' });
             if (audioTestRef.current) {
                 audioTestRef.current.src = URL.createObjectURL(blob);
-                // play the recorded snippet
                 // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 audioTestRef.current.play();
             }
@@ -199,7 +185,6 @@ export function JoinCalVideoPage() {
         }
     };
 
-    // speaker test: generate a beep and play through selected sink if supported
     const testSpeaker = async () => {
         setIsTestingSpeaker(true);
         setMediaError(null);
@@ -220,7 +205,7 @@ export function JoinCalVideoPage() {
             osc.start();
 
             audioEl.srcObject = dest.stream;
-                if (selectedSpeakerId && typeof (audioEl as any).setSinkId === 'function') {
+            if (selectedSpeakerId && typeof (audioEl as any).setSinkId === 'function') {
                 try {
                     await (audioEl as any).setSinkId(selectedSpeakerId);
                 } catch (err) {
@@ -229,12 +214,10 @@ export function JoinCalVideoPage() {
                 }
             }
 
-            // play for a short beep
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
             audioEl.play();
             await new Promise((res) => setTimeout(res, 700));
             osc.stop();
-            // stop generated stream tracks
             dest.stream.getTracks().forEach((t) => t.stop());
             audioEl.pause();
             audioEl.srcObject = null;
@@ -249,7 +232,6 @@ export function JoinCalVideoPage() {
         }
     };
 
-    // Ensure the video element gets the stream when it mounts or when media becomes available
     useEffect(() => {
         if (!hasMedia) return;
         if (videoRef.current && streamRef.current) {
@@ -305,7 +287,6 @@ export function JoinCalVideoPage() {
     const whenDate = format(new Date(`${booking.date}T00:00:00`), 'd MMMM yyyy');
     const whenTime = format(parse(booking.startTime, 'HH:mm', new Date()), 'h:mm a').toLowerCase();
 
-    // If user has joined the call, show the in-call full-screen UI
     if (inCall) {
         return (
             <div className="relative min-h-screen overflow-hidden bg-black text-zinc-100">
@@ -360,13 +341,11 @@ export function JoinCalVideoPage() {
 
     return (
         <div className="relative min-h-screen overflow-hidden bg-black text-zinc-100">
-            <div className="pointer-events-none absolute left-6 top-6 text-[2.2rem] font-semibold tracking-tight text-zinc-100">
-                Cal.com
-            </div>
+            <div className="pointer-events-none absolute left-6 top-6 text-[2.2rem] font-semibold tracking-tight text-zinc-100">Cal.com</div>
 
             <button
                 type="button"
-                onClick={() => setShowDock((value) => !value)}
+                onClick={() => setShowDock((v) => !v)}
                 className={cn(
                     'fixed left-0 top-1/2 z-30 flex h-[84px] w-10 -translate-y-1/2 items-center justify-center rounded-r-xl border border-zinc-700 bg-zinc-900/90 text-zinc-300 hover:text-white',
                     showDock && 'left-[240px]'
@@ -415,113 +394,112 @@ export function JoinCalVideoPage() {
             )}
 
             <main className={cn('px-4 pb-8 pt-12', showDock ? 'pl-[260px]' : '')}>
-                        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-                            <h2 className="text-[1.6rem] font-semibold tracking-tight">Are you ready to join?</h2>
-                            <Button variant="secondary" size="sm" onClick={handleJoin}>Join</Button>
-                        </div>
+                <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
+                    <h2 className="text-[1.6rem] font-semibold tracking-tight">Are you ready to join?</h2>
+                    <Button variant="secondary" size="sm" onClick={handleJoin}>Join</Button>
+                </div>
 
-                    <div className="relative bg-zinc-900">
-                        <div className="aspect-video">
-                            {hasMedia ? (
-                                cameraOn ? (
-                                    <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover" />
-                                ) : (
-                                    <div className="flex h-full items-center justify-center text-zinc-400">Camera is turned off</div>
-                                )
+                <div className="relative bg-zinc-900">
+                    <div className="aspect-video">
+                        {hasMedia ? (
+                            cameraOn ? (
+                                <video ref={videoRef} autoPlay playsInline muted className="h-full w-full object-cover" />
                             ) : (
-                                <div className="flex h-full items-center justify-center text-zinc-400">Camera preview unavailable</div>
-                            )}
-                        </div>
+                                <div className="flex h-full items-center justify-center text-zinc-400">Camera is turned off</div>
+                            )
+                        ) : (
+                            <div className="flex h-full items-center justify-center text-zinc-400">Camera preview unavailable</div>
+                        )}
+                    </div>
 
-                        {mediaError && (
-                            <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 p-4 text-center text-red-300">
-                                <div className="mb-2 font-semibold">{mediaError}</div>
-                                <div className="flex gap-3">
-                                    <button type="button" onClick={() => void getMedia()} className="underline">Retry</button>
-                                    <button type="button" onClick={() => { setMediaError(null); void getMedia(); }} className="underline">Request permission</button>
+                    {mediaError && (
+                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/70 p-4 text-center text-red-300">
+                            <div className="mb-2 font-semibold">{mediaError}</div>
+                            <div className="flex gap-3">
+                                <button type="button" onClick={() => void getMedia()} className="underline">Retry</button>
+                                <button type="button" onClick={() => { setMediaError(null); void getMedia(); }} className="underline">Request permission</button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="absolute left-0 right-0 bottom-0 z-10 border-t border-zinc-800 bg-black/60">
+                        <div className="mx-auto max-w-[640px] px-5 py-3 flex items-center justify-between text-sm">
+                            <div className="flex items-center gap-6">
+                                <button type="button" onClick={() => setCameraOn((v) => !v)} className={cn('flex items-center gap-2', cameraOn ? 'text-white' : 'text-zinc-400')}>
+                                    <Camera size={18} />
+                                    <span className="text-xs">{cameraOn ? 'Turn off' : 'Turn on'}</span>
+                                </button>
+                                <button type="button" onClick={() => setMicOn((v) => !v)} className={cn('flex items-center gap-2', micOn ? 'text-white' : 'text-zinc-400')}>
+                                    <Mic size={18} />
+                                    <span className="text-xs">{micOn ? 'Mute' : 'Unmute'}</span>
+                                </button>
+                                <div className="flex items-center gap-2 text-zinc-200">
+                                    <Sparkles size={18} />
+                                    <span className="text-xs">Effects</span>
+                                </div>
+                                <div className="flex items-center gap-2 text-zinc-200">
+                                    <Headphones size={18} />
+                                    <span className="text-xs">Reduce</span>
                                 </div>
                             </div>
-                        )}
-
-                        <div className="absolute left-0 right-0 bottom-0 z-10 border-t border-zinc-800 bg-black/60">
-                            <div className="mx-auto max-w-[640px] px-5 py-3 flex items-center justify-between text-sm">
-                                <div className="flex items-center gap-6">
-                                    <button type="button" onClick={() => setCameraOn((v) => !v)} className={cn('flex items-center gap-2', cameraOn ? 'text-white' : 'text-zinc-400')}>
-                                        <Camera size={18} />
-                                        <span className="text-xs">{cameraOn ? 'Turn off' : 'Turn on'}</span>
-                                    </button>
-                                    <button type="button" onClick={() => setMicOn((v) => !v)} className={cn('flex items-center gap-2', micOn ? 'text-white' : 'text-zinc-400')}>
-                                        <Mic size={18} />
-                                        <span className="text-xs">{micOn ? 'Mute' : 'Unmute'}</span>
-                                    </button>
-                                    <div className="flex items-center gap-2 text-zinc-200">
-                                        <Sparkles size={18} />
-                                        <span className="text-xs">Effects</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-zinc-200">
-                                        <Headphones size={18} />
-                                        <span className="text-xs">Reduce</span>
-                                    </div>
-                                </div>
-                                <div className="flex items-center gap-4 text-zinc-200">
-                                    <div className="flex items-center gap-2 text-sm text-zinc-100 bg-black/20 rounded-md px-3 py-1">{defaultUser.name}</div>
-                                    <MoreHorizontal size={18} />
-                                </div>
+                            <div className="flex items-center gap-4 text-zinc-200">
+                                <div className="flex items-center gap-2 text-sm text-zinc-100 bg-black/20 rounded-md px-3 py-1">{defaultUser.name}</div>
+                                <MoreHorizontal size={18} />
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="space-y-4 px-5 py-5">
-                        <div>
-                            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-200">
-                                <Camera size={15} />
-                                Camera
-                            </div>
-                            <div>
-                                <Select
-                                    options={cameras.length > 0 ? cameras.map((c, idx) => ({ value: c.deviceId, label: c.label || `Camera ${idx + 1}` })) : [{ value: '', label: 'No cameras' }]}
-                                    value={selectedCameraId ?? ''}
-                                    onChange={(e) => setSelectedCameraId(e.target.value || null)}
-                                />
-                            </div>
+                <div className="space-y-4 px-5 py-5">
+                    <div>
+                        <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-200">
+                            <Camera size={15} />
+                            Camera
                         </div>
-
                         <div>
-                            <div className="mb-2 flex items-center justify-between gap-2 text-sm font-semibold text-zinc-200">
-                                <span className="inline-flex items-center gap-2">
-                                    <Mic size={15} />
-                                    Microphone
-                                </span>
-                                <button type="button" onClick={() => void testMic()} className="text-[1.02rem] underline">
-                                    {isTestingMic ? 'Testing...' : 'Test your mic'}
-                                </button>
-                            </div>
-                            <div>
-                                <Select
-                                    options={microphones.length > 0 ? microphones.map((m, idx) => ({ value: m.deviceId, label: m.label || `Microphone ${idx + 1}` })) : [{ value: '', label: 'No microphones' }]}
-                                    value={selectedMicId ?? ''}
-                                    onChange={(e) => setSelectedMicId(e.target.value || null)}
-                                />
-                            </div>
+                            <Select
+                                options={cameras.length > 0 ? cameras.map((c, idx) => ({ value: c.deviceId, label: c.label || `Camera ${idx + 1}` })) : [{ value: '', label: 'No cameras' }]}
+                                value={selectedCameraId ?? ''}
+                                onChange={(e) => setSelectedCameraId(e.target.value || null)}
+                            />
                         </div>
+                    </div>
 
+                    <div>
+                        <div className="mb-2 flex items-center justify-between gap-2 text-sm font-semibold text-zinc-200">
+                            <span className="inline-flex items-center gap-2">
+                                <Mic size={15} />
+                                Microphone
+                            </span>
+                            <button type="button" onClick={() => void testMic()} className="text-[1.02rem] underline">
+                                {isTestingMic ? 'Testing...' : 'Test your mic'}
+                            </button>
+                        </div>
                         <div>
-                            <div className="mb-2 flex items-center justify-between gap-2 text-sm font-semibold text-zinc-200">
-                                <span className="inline-flex items-center gap-2">
-                                    <Headphones size={15} />
-                                    Speakers
-                                </span>
-                                <button type="button" onClick={() => void testSpeaker()} className="text-[1.02rem] underline">
-                                    {isTestingSpeaker ? 'Testing...' : 'Play test sound'}
-                                </button>
-                            </div>
-                            <div>
-                                <Select
-                                    options={speakers.length > 0 ? speakers.map((s, idx) => ({ value: s.deviceId, label: s.label || `Speaker ${idx + 1}` })) : [{ value: '', label: 'System default' }]}
-                                    value={selectedSpeakerId ?? ''}
-                                    onChange={(e) => setSelectedSpeakerId(e.target.value || null)}
-                                />
-                            </div>
+                            <Select
+                                options={microphones.length > 0 ? microphones.map((m, idx) => ({ value: m.deviceId, label: m.label || `Microphone ${idx + 1}` })) : [{ value: '', label: 'No microphones' }]}
+                                value={selectedMicId ?? ''}
+                                onChange={(e) => setSelectedMicId(e.target.value || null)}
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mb-2 flex items-center justify-between gap-2 text-sm font-semibold text-zinc-200">
+                            <span className="inline-flex items-center gap-2">
+                                <Headphones size={15} />
+                                Speakers
+                            </span>
+                            <button type="button" onClick={() => void testSpeaker()} className="text-[1.02rem] underline">
+                                {isTestingSpeaker ? 'Testing...' : 'Play test sound'}
+                            </button>
+                        </div>
+                        <div>
+                            <Select
+                                options={speakers.length > 0 ? speakers.map((s, idx) => ({ value: s.deviceId, label: s.label || `Speaker ${idx + 1}` })) : [{ value: '', label: 'System default' }]}
+                                value={selectedSpeakerId ?? ''}
+                                onChange={(e) => setSelectedSpeakerId(e.target.value || null)}
+                            />
                         </div>
                     </div>
                 </div>
@@ -529,11 +507,11 @@ export function JoinCalVideoPage() {
                 <audio ref={audioTestRef} className="hidden" />
 
                 <div className="mt-5 text-center">
-                    <button type="button" onClick={() => navigate('/bookings')} className="text-sm text-zinc-400 hover:text-zinc-200">
-                        Back to bookings
-                    </button>
+                    <button type="button" onClick={() => navigate('/bookings')} className="text-sm text-zinc-400 hover:text-zinc-200">Back to bookings</button>
                 </div>
             </main>
         </div>
     );
 }
+
+export default JoinCalVideoPage;

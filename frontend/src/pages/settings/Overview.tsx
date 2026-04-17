@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Card } from '../../components/ui/Card';
 import { User, Settings, Calendar, Video, Palette, Shield, Key, Layers, Code, ChevronRight } from 'lucide-react';
-import { useUserStore } from '../../stores/userStore';
-
 function RowItem({ to, icon, title, desc }: { to: string; icon: React.ReactNode; title: string; desc: string }) {
   return (
     <Link
