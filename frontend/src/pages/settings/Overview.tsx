@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { PageHeader } from '../../components/layout/PageHeader';
 import { Card } from '../../components/ui/Card';
-import { User, Settings, Calendar, Video, Palette, Clock, Shield, Key, Layers, Code, ChevronRight } from 'lucide-react';
+import { User, Settings, Calendar, Video, Palette, Shield, Key, Layers, Code, ChevronRight } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 
 function RowItem({ to, icon, title, desc }: { to: string; icon: React.ReactNode; title: string; desc: string }) {
@@ -25,7 +25,6 @@ function RowItem({ to, icon, title, desc }: { to: string; icon: React.ReactNode;
 }
 
 export function Overview() {
-  const user = useUserStore((s) => s.user);
 
   return (
     <div className="space-y-10">

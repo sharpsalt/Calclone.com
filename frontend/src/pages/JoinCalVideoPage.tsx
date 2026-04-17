@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
     Camera,
-    ChevronDown,
     ChevronLeft,
     ChevronRight,
     Headphones,
@@ -221,9 +220,8 @@ export function JoinCalVideoPage() {
             osc.start();
 
             audioEl.srcObject = dest.stream;
-            if (selectedSpeakerId && typeof (audioEl as any).setSinkId === 'function') {
+                if (selectedSpeakerId && typeof (audioEl as any).setSinkId === 'function') {
                 try {
-                    // @ts-expect-error: setSinkId is not yet on lib.dom types in some TS versions
                     await (audioEl as any).setSinkId(selectedSpeakerId);
                 } catch (err) {
                     // eslint-disable-next-line no-console
@@ -417,11 +415,10 @@ export function JoinCalVideoPage() {
             )}
 
             <main className={cn('px-4 pb-8 pt-12', showDock ? 'pl-[260px]' : '')}>
-                <div className="mx-auto w-full max-w-[680px] cal-card overflow-hidden">
-                    <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
-                        <h2 className="text-[1.6rem] font-semibold tracking-tight">Are you ready to join?</h2>
-                        <Button variant="secondary" size="sm" onClick={() => window.alert('Joining call...')}>Join</Button>
-                    </div>
+                        <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-4">
+                            <h2 className="text-[1.6rem] font-semibold tracking-tight">Are you ready to join?</h2>
+                            <Button variant="secondary" size="sm" onClick={handleJoin}>Join</Button>
+                        </div>
 
                     <div className="relative bg-zinc-900">
                         <div className="aspect-video">

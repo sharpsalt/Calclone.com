@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Shell } from '../components/layout/Shell';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
-import { PageHeader } from '../components/layout/PageHeader';
 import { cn, getInitials } from '../lib/utils';
 import { ArrowLeft, Menu, X } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
